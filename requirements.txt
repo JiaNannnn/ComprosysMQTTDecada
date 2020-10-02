@@ -1,0 +1,2 @@
+enos-api-sdk-python==0.0.4
+enos-mqtt-sdk-python==0.1.0
