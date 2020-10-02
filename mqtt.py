@@ -48,6 +48,6 @@ client.username_pw_set(user, password=password)    #set username and password
 client.on_connect= on_connect                      #attach function to callback
 client.on_message= on_message                      #attach function to callback
 client.connect(broker_address,port,60) #connect
-client.subscribe("THE TOPIC WHICH YOU WANT TO SUB") #subscribe
+client.subscribe("/sys/ucqZBSyF/integration/measurepoint/post") #subscribe
 client.loop_forever() #then keep listening forever
 
