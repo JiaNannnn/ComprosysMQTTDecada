@@ -22,23 +22,56 @@ def on_message(client, userdata, message):
     print ("Message received: "  + message.payload.decode("utf-8"))
     #with open('D:\Intern Sem\AIOT\daata.csv','a+') as f:
         #f.write("Message received: "  + message.payload + "\n")
+    #payload = json.loads(message.payload)
     payload = json.loads(message.payload)
+    res = {}
+    for line in payload:
+        res.update(line)
+
+    print(res['data'])
+    Dmessage = res['data']
+    #print(payload[0]['data'])
+    #print(Dmessage[0:2])
+    #print(Dmessage[2:6])
+    #print(Dmessage[6:10])
+    #print(Dmessage[10:15])
+    if Dmessage[0:2] == '02':  # CO
+        temperature = Dmessage[2:6]
+        humidity = Dmessage[6:10]
+        carbonMono = Dmessage[10:15]
+        data = {
+            'LoraTemp': (int(temperature,16)/100),
+            'LoraHumid': (int(humidity,16)/100),
+            'LoraCO': (int(carbonMono,16))
+        }
+    elif Dmessage[0:2] == "03":  # pm2.5
+        temperature = Dmessage[2:6]
+        humidity = Dmessage[6:10]
+        pm2five = Dmessage[10:15]
+        data = {
+            'LoraTemp': int(temperature,16)/100,
+            'LoraHumid': int(humidity,16)/100,
+            'LoraPM2.5': int(pm2five,16)
+        }
+    print(data)
     #print (payload)
-    payload_dict = {}
-    for data_entry in payload["DATA"]:
-        payload_dict[data_entry["ID"]] = float(data_entry["V"])
-    print(payload_dict)
-    decada_client.postMeasurePoints(payload_dict)
+    #payload_dict = {}
+    #for data_entry in payload["DATA"]:
+     #   payload_dict[data_entry["ID"]] = float(data_entry["V"])
+    #print(payload_dict)
+    print(Dmessage)
+    decada_client.postMeasurePoints(data)
 
     #print(decada_client.queryAttributes(["id"]))
 
     #decada_client.updateAttributes({"id": 100})
 
+
     #print(decada_client.queryAttributes(["id"]))
     #print(values)
 Connected = False   #global variable for the state of the connection
 
-broker_address= "10.3.1.50" #Broker address
+broker_address= "192.168.55.154" #Broker address
 port = 1883                         #Broker port
 user = ""                    #Connection username
 password = ""            #Connection password
@@ -48,6 +81,8 @@ client.username_pw_set(user, password=password)    #set username and password
 client.on_connect= on_connect                      #attach function to callback
 client.on_message= on_message                      #attach function to callback
 client.connect(broker_address,port,60) #connect
-client.subscribe("/sys/ucqZBSyF/integration/measurepoint/post") #subscribe
+#client.subscribe("/sys/ucqZBSyF/integration/measurepoint/post") #subscribe
+client.subscribe("GIOT-GW/UL/1C497BE9E4E4") #subscribe
+
 client.loop_forever() #then keep listening forever
 
